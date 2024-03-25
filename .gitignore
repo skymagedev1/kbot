@@ -1,0 +1,6 @@
+*.env
+*.out
+*.exe
+*.DS_Store
+*.idea/
+/kbot
