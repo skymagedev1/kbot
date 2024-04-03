@@ -61,4 +61,4 @@ remove_macos:
 	docker rmi ${MACOS_CONTAINER_TAG}
 
 clean:
-	rm -rf kbot
+	docker rmi ${LINUX_CONTAINER_TAG}
