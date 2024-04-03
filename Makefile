@@ -5,6 +5,9 @@ LINUXOS=linux
 WINDOWSOS=windows
 TARGETARCH=amd64
 MACOS=darwin
+LINUX_CONTAINER_TAG=${REGISTRY}/${APP}:${VERSION}-${LINUXOS}-${TARGETARCH}
+WINDOWS_CONTAINER_TAG=${REGISTRY}/${APP}:${VERSION}-${WINDOWSOS}-${TARGETARCH}
+MACOS_CONTAINER_TAG=${REGISTRY}/${APP}:${VERSION}-${MACOS}-${TARGETARCH}
 
 format:
 	gofmt -s -w ./
@@ -28,31 +31,34 @@ build_macos: format get
 	CGO_ENABLED=0 GOOS=${MACOS} GOARCH=${TARGETARCH} go build -v -o kbot -ldflags "-X github.com/skymagedev1/kbot/cmd.appVersion="${VERSION}
 
 linux:
-	docker build --build-arg BUILD_PLATFORM=build_linux -t ${REGISTRY}/${APP}:${VERSION}-${LINUXOS}-${TARGETARCH} .
+	docker build --build-arg BUILD_PLATFORM=build_linux -t ${LINUX_CONTAINER_TAG} .
 
 windows:
-	docker build --build-arg BUILD_PLATFORM=build_windows -t ${REGISTRY}/${APP}:${VERSION}-${WINDOWSOS}-${TARGETARCH} .
+	docker build --build-arg BUILD_PLATFORM=build_windows -t ${WINDOWS_CONTAINER_TAG} .
 
 macos:
-	docker build --build-arg BUILD_PLATFORM=build_macos -t ${REGISTRY}/${APP}:${VERSION}-${MACOS}-${TARGETARCH} .
+	docker build --build-arg BUILD_PLATFORM=build_macos -t ${MACOS_CONTAINER_TAG} .
+
+image:
+	docker build . -t ${LINUX_CONTAINER_TAG}
 
 push_linux:
-	docker push ${REGISTRY}/${APP}:${VERSION}-${LINUXOS}-${TARGETARCH}
+	docker push ${LINUX_CONTAINER_TAG}
 
 push_windows:
-	docker push ${REGISTRY}/${APP}:${VERSION}-${WINDOWSOS}-${TARGETARCH}
+	docker push ${WINDOWS_CONTAINER_TAG}
 
 push_macos:
-	docker push ${REGISTRY}/${APP}:${VERSION}-${MACOS}-${TARGETARCH}
+	docker push ${MACOS_CONTAINER_TAG}
 
 remove_linux:
-	docker rmi ${REGISTRY}/${APP}:${VERSION}-${LINUXOS}-${TARGETARCH}
+	docker rmi ${LINUX_CONTAINER_TAG}
 
 remove_windows:
-	docker rmi ${REGISTRY}/${APP}:${VERSION}-${WINDOWSOS}-${TARGETARCH}
+	docker rmi ${WINDOWS_CONTAINER_TAG}
 
 remove_macos:
-	docker rmi ${REGISTRY}/${APP}:${VERSION}-${MACOS}-${TARGETARCH}
+	docker rmi ${MACOS_CONTAINER_TAG}
 
 clean:
 	rm -rf kbot
